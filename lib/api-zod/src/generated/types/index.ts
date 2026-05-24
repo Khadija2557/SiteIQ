@@ -7,6 +7,26 @@
  */
 
 export * from './activityItem';
+export * from './aiAssignment';
+export * from './aiAssignmentTask';
+export * from './aiAssignmentWorker';
+export * from './aiAssignTaskInput';
+export * from './aiAssignTaskResult';
+export * from './aiCandidate';
+export * from './aiCandidateWorker';
+export * from './aiConflict';
+export * from './aiDecision';
+export * from './aiDecisionLog';
+export * from './aiDisruptionInput';
+export * from './aiDisruptionResult';
+export * from './aiDisruptionResultAffectedTasksItem';
+export * from './aiDisruptionResultUnresolvableItem';
+export * from './aiOptimizeInput';
+export * from './aiOptimizeResult';
+export * from './aiOptimizeResultUnassignedItem';
+export * from './aiRouteInput';
+export * from './aiRouteResult';
+export * from './aiWaypoint';
 export * from './alert';
 export * from './authResponse';
 export * from './camera';
@@ -14,6 +34,7 @@ export * from './dashboardSummary';
 export * from './delivery';
 export * from './deliveryInput';
 export * from './deliveryUpdate';
+export * from './getAiDecisionsParams';
 export * from './hazard';
 export * from './hazardInput';
 export * from './hazardUpdate';

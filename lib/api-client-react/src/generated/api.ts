@@ -21,6 +21,15 @@ import type {
 
 import type {
   ActivityItem,
+  AiAssignTaskInput,
+  AiAssignTaskResult,
+  AiDecisionLog,
+  AiDisruptionInput,
+  AiDisruptionResult,
+  AiOptimizeInput,
+  AiOptimizeResult,
+  AiRouteInput,
+  AiRouteResult,
   Alert,
   AuthResponse,
   Camera,
@@ -28,6 +37,7 @@ import type {
   Delivery,
   DeliveryInput,
   DeliveryUpdate,
+  GetAiDecisionsParams,
   Hazard,
   HazardInput,
   HazardUpdate,
@@ -2843,6 +2853,374 @@ export function useGetZoneStatus<TData = Awaited<ReturnType<typeof getZoneStatus
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetZoneStatusQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getAiAssignTaskUrl = () => {
+
+
+
+
+  return `/api/ai/assign-task`
+}
+
+/**
+ * @summary Find best workers for a task
+ */
+export const aiAssignTask = async (aiAssignTaskInput: AiAssignTaskInput, options?: RequestInit): Promise<AiAssignTaskResult> => {
+
+  return customFetch<AiAssignTaskResult>(getAiAssignTaskUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      aiAssignTaskInput,)
+  }
+);}
+
+
+
+
+export const getAiAssignTaskMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof aiAssignTask>>, TError,{data: BodyType<AiAssignTaskInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof aiAssignTask>>, TError,{data: BodyType<AiAssignTaskInput>}, TContext> => {
+
+const mutationKey = ['aiAssignTask'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof aiAssignTask>>, {data: BodyType<AiAssignTaskInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  aiAssignTask(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AiAssignTaskMutationResult = NonNullable<Awaited<ReturnType<typeof aiAssignTask>>>
+    export type AiAssignTaskMutationBody = BodyType<AiAssignTaskInput>
+    export type AiAssignTaskMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Find best workers for a task
+ */
+export const useAiAssignTask = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof aiAssignTask>>, TError,{data: BodyType<AiAssignTaskInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof aiAssignTask>>,
+        TError,
+        {data: BodyType<AiAssignTaskInput>},
+        TContext
+      > => {
+      return useMutation(getAiAssignTaskMutationOptions(options));
+    }
+
+export const getAiOptimizeScheduleUrl = () => {
+
+
+
+
+  return `/api/ai/optimize-schedule`
+}
+
+/**
+ * @summary Full greedy schedule optimization
+ */
+export const aiOptimizeSchedule = async (aiOptimizeInput?: AiOptimizeInput, options?: RequestInit): Promise<AiOptimizeResult> => {
+
+  return customFetch<AiOptimizeResult>(getAiOptimizeScheduleUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      aiOptimizeInput,)
+  }
+);}
+
+
+
+
+export const getAiOptimizeScheduleMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof aiOptimizeSchedule>>, TError,{data?: BodyType<AiOptimizeInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof aiOptimizeSchedule>>, TError,{data?: BodyType<AiOptimizeInput>}, TContext> => {
+
+const mutationKey = ['aiOptimizeSchedule'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof aiOptimizeSchedule>>, {data?: BodyType<AiOptimizeInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  aiOptimizeSchedule(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AiOptimizeScheduleMutationResult = NonNullable<Awaited<ReturnType<typeof aiOptimizeSchedule>>>
+    export type AiOptimizeScheduleMutationBody = BodyType<AiOptimizeInput> | undefined
+    export type AiOptimizeScheduleMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Full greedy schedule optimization
+ */
+export const useAiOptimizeSchedule = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof aiOptimizeSchedule>>, TError,{data?: BodyType<AiOptimizeInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof aiOptimizeSchedule>>,
+        TError,
+        {data?: BodyType<AiOptimizeInput>},
+        TContext
+      > => {
+      return useMutation(getAiOptimizeScheduleMutationOptions(options));
+    }
+
+export const getAiHandleDisruptionUrl = () => {
+
+
+
+
+  return `/api/ai/handle-disruption`
+}
+
+/**
+ * @summary Handle a disruption event and re-route
+ */
+export const aiHandleDisruption = async (aiDisruptionInput: AiDisruptionInput, options?: RequestInit): Promise<AiDisruptionResult> => {
+
+  return customFetch<AiDisruptionResult>(getAiHandleDisruptionUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      aiDisruptionInput,)
+  }
+);}
+
+
+
+
+export const getAiHandleDisruptionMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof aiHandleDisruption>>, TError,{data: BodyType<AiDisruptionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof aiHandleDisruption>>, TError,{data: BodyType<AiDisruptionInput>}, TContext> => {
+
+const mutationKey = ['aiHandleDisruption'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof aiHandleDisruption>>, {data: BodyType<AiDisruptionInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  aiHandleDisruption(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AiHandleDisruptionMutationResult = NonNullable<Awaited<ReturnType<typeof aiHandleDisruption>>>
+    export type AiHandleDisruptionMutationBody = BodyType<AiDisruptionInput>
+    export type AiHandleDisruptionMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Handle a disruption event and re-route
+ */
+export const useAiHandleDisruption = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof aiHandleDisruption>>, TError,{data: BodyType<AiDisruptionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof aiHandleDisruption>>,
+        TError,
+        {data: BodyType<AiDisruptionInput>},
+        TContext
+      > => {
+      return useMutation(getAiHandleDisruptionMutationOptions(options));
+    }
+
+export const getAiPlanRouteUrl = () => {
+
+
+
+
+  return `/api/ai/plan-route`
+}
+
+/**
+ * @summary A* safe route planning
+ */
+export const aiPlanRoute = async (aiRouteInput: AiRouteInput, options?: RequestInit): Promise<AiRouteResult> => {
+
+  return customFetch<AiRouteResult>(getAiPlanRouteUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      aiRouteInput,)
+  }
+);}
+
+
+
+
+export const getAiPlanRouteMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof aiPlanRoute>>, TError,{data: BodyType<AiRouteInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof aiPlanRoute>>, TError,{data: BodyType<AiRouteInput>}, TContext> => {
+
+const mutationKey = ['aiPlanRoute'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof aiPlanRoute>>, {data: BodyType<AiRouteInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  aiPlanRoute(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AiPlanRouteMutationResult = NonNullable<Awaited<ReturnType<typeof aiPlanRoute>>>
+    export type AiPlanRouteMutationBody = BodyType<AiRouteInput>
+    export type AiPlanRouteMutationError = ErrorType<unknown>
+
+    /**
+ * @summary A* safe route planning
+ */
+export const useAiPlanRoute = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof aiPlanRoute>>, TError,{data: BodyType<AiRouteInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof aiPlanRoute>>,
+        TError,
+        {data: BodyType<AiRouteInput>},
+        TContext
+      > => {
+      return useMutation(getAiPlanRouteMutationOptions(options));
+    }
+
+export const getGetAiDecisionsUrl = (params?: GetAiDecisionsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/ai/decisions/recent?${stringifiedParams}` : `/api/ai/decisions/recent`
+}
+
+/**
+ * @summary Recent AI decisions with full reasoning
+ */
+export const getAiDecisions = async (params?: GetAiDecisionsParams, options?: RequestInit): Promise<AiDecisionLog> => {
+
+  return customFetch<AiDecisionLog>(getGetAiDecisionsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetAiDecisionsQueryKey = (params?: GetAiDecisionsParams,) => {
+    return [
+    `/api/ai/decisions/recent`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetAiDecisionsQueryOptions = <TData = Awaited<ReturnType<typeof getAiDecisions>>, TError = ErrorType<unknown>>(params?: GetAiDecisionsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAiDecisions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAiDecisionsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAiDecisions>>> = ({ signal }) => getAiDecisions(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAiDecisions>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetAiDecisionsQueryResult = NonNullable<Awaited<ReturnType<typeof getAiDecisions>>>
+export type GetAiDecisionsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Recent AI decisions with full reasoning
+ */
+
+export function useGetAiDecisions<TData = Awaited<ReturnType<typeof getAiDecisions>>, TError = ErrorType<unknown>>(
+ params?: GetAiDecisionsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAiDecisions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetAiDecisionsQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

@@ -740,3 +740,186 @@ export const GetZoneStatusResponseItem = zod.object({
 export const GetZoneStatusResponse = zod.array(GetZoneStatusResponseItem)
 
 
+/**
+ * @summary Find best workers for a task
+ */
+export const AiAssignTaskBody = zod.object({
+  "task_id": zod.number()
+})
+
+export const AiAssignTaskResponse = zod.object({
+  "taskId": zod.number(),
+  "taskTitle": zod.string(),
+  "taskZone": zod.string().optional(),
+  "taskPriority": zod.string().optional(),
+  "topCandidate": zod.object({
+  "worker": zod.object({
+  "id": zod.number().optional(),
+  "name": zod.string().optional(),
+  "trade": zod.string().optional(),
+  "zone": zod.string().optional(),
+  "ppeScore": zod.number().optional(),
+  "fatigueScore": zod.number().optional()
+}),
+  "score": zod.number(),
+  "reasons": zod.array(zod.string())
+}).optional(),
+  "allCandidates": zod.array(zod.object({
+  "worker": zod.object({
+  "id": zod.number().optional(),
+  "name": zod.string().optional(),
+  "trade": zod.string().optional(),
+  "zone": zod.string().optional(),
+  "ppeScore": zod.number().optional(),
+  "fatigueScore": zod.number().optional()
+}),
+  "score": zod.number(),
+  "reasons": zod.array(zod.string())
+})),
+  "explanation": zod.string(),
+  "message": zod.string().nullish(),
+  "supervisorAlertTriggered": zod.boolean().nullish()
+})
+
+
+/**
+ * @summary Full greedy schedule optimization
+ */
+export const AiOptimizeScheduleBody = zod.object({
+  "apply": zod.boolean().optional()
+})
+
+export const AiOptimizeScheduleResponse = zod.object({
+  "assignments": zod.array(zod.object({
+  "task": zod.object({
+  "id": zod.number().optional(),
+  "title": zod.string().optional(),
+  "priority": zod.string().optional(),
+  "zone": zod.string().optional()
+}),
+  "worker": zod.object({
+  "id": zod.number().optional(),
+  "name": zod.string().optional(),
+  "trade": zod.string().optional(),
+  "zone": zod.string().optional()
+}),
+  "score": zod.number(),
+  "reasoning": zod.string()
+})),
+  "conflicts": zod.array(zod.object({
+  "description": zod.string(),
+  "taskIds": zod.array(zod.number()),
+  "machineId": zod.number().nullish()
+})),
+  "unassigned": zod.array(zod.object({
+  "id": zod.number().optional(),
+  "title": zod.string().optional(),
+  "priority": zod.string().optional(),
+  "zone": zod.string().optional(),
+  "reason": zod.string().optional()
+})),
+  "summary": zod.string(),
+  "applied": zod.boolean()
+})
+
+
+/**
+ * @summary Handle a disruption event and re-route
+ */
+export const AiHandleDisruptionBody = zod.object({
+  "type": zod.string(),
+  "entity_id": zod.number()
+})
+
+export const AiHandleDisruptionResponse = zod.object({
+  "disruptionType": zod.string(),
+  "entityId": zod.number(),
+  "affectedTaskCount": zod.number(),
+  "newAssignmentCount": zod.number().optional(),
+  "unresolvableCount": zod.number().optional(),
+  "supervisorNotifications": zod.array(zod.string()),
+  "explanation": zod.string(),
+  "affectedTasks": zod.array(zod.object({
+  "id": zod.number().optional(),
+  "title": zod.string().optional(),
+  "status": zod.string().optional(),
+  "zone": zod.string().optional()
+})).optional(),
+  "newAssignments": zod.array(zod.object({
+  "task": zod.object({
+  "id": zod.number().optional(),
+  "title": zod.string().optional(),
+  "priority": zod.string().optional(),
+  "zone": zod.string().optional()
+}),
+  "worker": zod.object({
+  "id": zod.number().optional(),
+  "name": zod.string().optional(),
+  "trade": zod.string().optional(),
+  "zone": zod.string().optional()
+}),
+  "score": zod.number(),
+  "reasoning": zod.string()
+})).optional(),
+  "unresolvable": zod.array(zod.object({
+  "id": zod.number().optional(),
+  "title": zod.string().optional(),
+  "zone": zod.string().optional()
+})).optional()
+})
+
+
+/**
+ * @summary A* safe route planning
+ */
+export const AiPlanRouteBody = zod.object({
+  "startX": zod.number(),
+  "startY": zod.number(),
+  "endX": zod.number(),
+  "endY": zod.number()
+})
+
+export const AiPlanRouteResponse = zod.object({
+  "start": zod.object({
+  "x": zod.number(),
+  "y": zod.number()
+}),
+  "end": zod.object({
+  "x": zod.number(),
+  "y": zod.number()
+}),
+  "waypoints": zod.array(zod.object({
+  "x": zod.number(),
+  "y": zod.number()
+})).nullish(),
+  "waypointCount": zod.number().nullish(),
+  "estimatedDistance": zod.number().nullish(),
+  "safe": zod.boolean(),
+  "message": zod.string().nullish(),
+  "hazardsAvoided": zod.number().nullish(),
+  "cranesAvoided": zod.number().nullish()
+})
+
+
+/**
+ * @summary Recent AI decisions with full reasoning
+ */
+export const GetAiDecisionsQueryParams = zod.object({
+  "limit": zod.coerce.number().optional()
+})
+
+export const GetAiDecisionsResponse = zod.object({
+  "decisions": zod.array(zod.object({
+  "id": zod.string(),
+  "timestamp": zod.string(),
+  "type": zod.string(),
+  "tenantId": zod.number(),
+  "taskId": zod.number().nullish(),
+  "workerId": zod.number().nullish(),
+  "explanation": zod.string(),
+  "score": zod.number().nullish()
+})),
+  "count": zod.number()
+})
+
+

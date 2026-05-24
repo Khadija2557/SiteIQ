@@ -729,6 +729,100 @@ paths:
                 items:
                   $ref: "#/components/schemas/ZoneStatus"
 
+  /ai/assign-task:
+    post:
+      operationId: aiAssignTask
+      tags: [ai]
+      summary: Find best workers for a task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiAssignTaskInput"
+      responses:
+        "200":
+          description: Candidates with reasoning
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiAssignTaskResult"
+
+  /ai/optimize-schedule:
+    post:
+      operationId: aiOptimizeSchedule
+      tags: [ai]
+      summary: Full greedy schedule optimization
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiOptimizeInput"
+      responses:
+        "200":
+          description: Optimization plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiOptimizeResult"
+
+  /ai/handle-disruption:
+    post:
+      operationId: aiHandleDisruption
+      tags: [ai]
+      summary: Handle a disruption event and re-route
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiDisruptionInput"
+      responses:
+        "200":
+          description: Disruption re-route plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiDisruptionResult"
+
+  /ai/plan-route:
+    post:
+      operationId: aiPlanRoute
+      tags: [ai]
+      summary: A* safe route planning
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiRouteInput"
+      responses:
+        "200":
+          description: Safe path waypoints
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiRouteResult"
+
+  /ai/decisions/recent:
+    get:
+      operationId: getAiDecisions
+      tags: [ai]
+      summary: Recent AI decisions with full reasoning
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Recent decisions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiDecisionLog"
+
 components:
   schemas:
     HealthStatus:
@@ -1333,3 +1427,248 @@ components:
           type: integer
         status:
           type: string
+
+    AiAssignTaskInput:
+      type: object
+      required: [task_id]
+      properties:
+        task_id:
+          type: integer
+
+    AiCandidate:
+      type: object
+      required: [worker, score, reasons]
+      properties:
+        worker:
+          type: object
+          properties:
+            id: { type: integer }
+            name: { type: string }
+            trade: { type: string }
+            zone: { type: string }
+            ppeScore: { type: integer }
+            fatigueScore: { type: integer }
+        score:
+          type: integer
+        reasons:
+          type: array
+          items:
+            type: string
+
+    AiAssignTaskResult:
+      type: object
+      required: [taskId, taskTitle, allCandidates, explanation]
+      properties:
+        taskId:
+          type: integer
+        taskTitle:
+          type: string
+        taskZone:
+          type: string
+        taskPriority:
+          type: string
+        topCandidate:
+          $ref: "#/components/schemas/AiCandidate"
+        allCandidates:
+          type: array
+          items:
+            $ref: "#/components/schemas/AiCandidate"
+        explanation:
+          type: string
+        message:
+          type: ["string", "null"]
+        supervisorAlertTriggered:
+          type: ["boolean", "null"]
+
+    AiOptimizeInput:
+      type: object
+      properties:
+        apply:
+          type: boolean
+
+    AiAssignment:
+      type: object
+      required: [task, worker, score, reasoning]
+      properties:
+        task:
+          type: object
+          properties:
+            id: { type: integer }
+            title: { type: string }
+            priority: { type: string }
+            zone: { type: string }
+        worker:
+          type: object
+          properties:
+            id: { type: integer }
+            name: { type: string }
+            trade: { type: string }
+            zone: { type: string }
+        score:
+          type: integer
+        reasoning:
+          type: string
+
+    AiConflict:
+      type: object
+      required: [description, taskIds]
+      properties:
+        description:
+          type: string
+        taskIds:
+          type: array
+          items:
+            type: integer
+        machineId:
+          type: ["integer", "null"]
+
+    AiOptimizeResult:
+      type: object
+      required: [assignments, conflicts, unassigned, summary, applied]
+      properties:
+        assignments:
+          type: array
+          items:
+            $ref: "#/components/schemas/AiAssignment"
+        conflicts:
+          type: array
+          items:
+            $ref: "#/components/schemas/AiConflict"
+        unassigned:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: integer }
+              title: { type: string }
+              priority: { type: string }
+              zone: { type: string }
+              reason: { type: string }
+        summary:
+          type: string
+        applied:
+          type: boolean
+
+    AiDisruptionInput:
+      type: object
+      required: [type, entity_id]
+      properties:
+        type:
+          type: string
+        entity_id:
+          type: integer
+
+    AiDisruptionResult:
+      type: object
+      required: [disruptionType, entityId, affectedTaskCount, explanation, supervisorNotifications]
+      properties:
+        disruptionType:
+          type: string
+        entityId:
+          type: integer
+        affectedTaskCount:
+          type: integer
+        newAssignmentCount:
+          type: integer
+        unresolvableCount:
+          type: integer
+        supervisorNotifications:
+          type: array
+          items:
+            type: string
+        explanation:
+          type: string
+        affectedTasks:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: integer }
+              title: { type: string }
+              status: { type: string }
+              zone: { type: string }
+        newAssignments:
+          type: array
+          items:
+            $ref: "#/components/schemas/AiAssignment"
+        unresolvable:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: integer }
+              title: { type: string }
+              zone: { type: string }
+
+    AiRouteInput:
+      type: object
+      required: [startX, startY, endX, endY]
+      properties:
+        startX: { type: number }
+        startY: { type: number }
+        endX: { type: number }
+        endY: { type: number }
+
+    AiWaypoint:
+      type: object
+      required: [x, y]
+      properties:
+        x: { type: number }
+        y: { type: number }
+
+    AiRouteResult:
+      type: object
+      required: [start, end, safe]
+      properties:
+        start:
+          $ref: "#/components/schemas/AiWaypoint"
+        end:
+          $ref: "#/components/schemas/AiWaypoint"
+        waypoints:
+          type: ["array", "null"]
+          items:
+            $ref: "#/components/schemas/AiWaypoint"
+        waypointCount:
+          type: ["integer", "null"]
+        estimatedDistance:
+          type: ["number", "null"]
+        safe:
+          type: boolean
+        message:
+          type: ["string", "null"]
+        hazardsAvoided:
+          type: ["integer", "null"]
+        cranesAvoided:
+          type: ["integer", "null"]
+
+    AiDecision:
+      type: object
+      required: [id, timestamp, type, tenantId, explanation]
+      properties:
+        id:
+          type: string
+        timestamp:
+          type: string
+        type:
+          type: string
+        tenantId:
+          type: integer
+        taskId:
+          type: ["integer", "null"]
+        workerId:
+          type: ["integer", "null"]
+        explanation:
+          type: string
+        score:
+          type: ["integer", "null"]
+
+    AiDecisionLog:
+      type: object
+      required: [decisions, count]
+      properties:
+        decisions:
+          type: array
+          items:
+            $ref: "#/components/schemas/AiDecision"
+        count:
+          type: integer

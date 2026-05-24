@@ -2,6 +2,7 @@ import http from "http";
 import app from "./app";
 import { logger } from "./lib/logger";
 import { createSocketServer } from "./lib/socket";
+import { startOrchestratorBackgroundJob } from "./services/taskOrchestrator";
 
 const rawPort = process.env["PORT"];
 
@@ -27,4 +28,5 @@ httpServer.listen(port, (err?: Error) => {
   }
 
   logger.info({ port }, "Server listening with Socket.IO");
+  startOrchestratorBackgroundJob();
 });

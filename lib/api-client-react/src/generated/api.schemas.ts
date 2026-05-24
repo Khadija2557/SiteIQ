@@ -356,6 +356,167 @@ export interface ZoneStatus {
   status: string;
 }
 
+export interface AiAssignTaskInput {
+  task_id: number;
+}
+
+export type AiCandidateWorker = {
+  id?: number;
+  name?: string;
+  trade?: string;
+  zone?: string;
+  ppeScore?: number;
+  fatigueScore?: number;
+};
+
+export interface AiCandidate {
+  worker: AiCandidateWorker;
+  score: number;
+  reasons: string[];
+}
+
+export interface AiAssignTaskResult {
+  taskId: number;
+  taskTitle: string;
+  taskZone?: string;
+  taskPriority?: string;
+  topCandidate?: AiCandidate;
+  allCandidates: AiCandidate[];
+  explanation: string;
+  /** @nullable */
+  message?: string | null;
+  /** @nullable */
+  supervisorAlertTriggered?: boolean | null;
+}
+
+export interface AiOptimizeInput {
+  apply?: boolean;
+}
+
+export type AiAssignmentTask = {
+  id?: number;
+  title?: string;
+  priority?: string;
+  zone?: string;
+};
+
+export type AiAssignmentWorker = {
+  id?: number;
+  name?: string;
+  trade?: string;
+  zone?: string;
+};
+
+export interface AiAssignment {
+  task: AiAssignmentTask;
+  worker: AiAssignmentWorker;
+  score: number;
+  reasoning: string;
+}
+
+export interface AiConflict {
+  description: string;
+  taskIds: number[];
+  /** @nullable */
+  machineId?: number | null;
+}
+
+export type AiOptimizeResultUnassignedItem = {
+  id?: number;
+  title?: string;
+  priority?: string;
+  zone?: string;
+  reason?: string;
+};
+
+export interface AiOptimizeResult {
+  assignments: AiAssignment[];
+  conflicts: AiConflict[];
+  unassigned: AiOptimizeResultUnassignedItem[];
+  summary: string;
+  applied: boolean;
+}
+
+export interface AiDisruptionInput {
+  type: string;
+  entity_id: number;
+}
+
+export type AiDisruptionResultAffectedTasksItem = {
+  id?: number;
+  title?: string;
+  status?: string;
+  zone?: string;
+};
+
+export type AiDisruptionResultUnresolvableItem = {
+  id?: number;
+  title?: string;
+  zone?: string;
+};
+
+export interface AiDisruptionResult {
+  disruptionType: string;
+  entityId: number;
+  affectedTaskCount: number;
+  newAssignmentCount?: number;
+  unresolvableCount?: number;
+  supervisorNotifications: string[];
+  explanation: string;
+  affectedTasks?: AiDisruptionResultAffectedTasksItem[];
+  newAssignments?: AiAssignment[];
+  unresolvable?: AiDisruptionResultUnresolvableItem[];
+}
+
+export interface AiRouteInput {
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+}
+
+export interface AiWaypoint {
+  x: number;
+  y: number;
+}
+
+export interface AiRouteResult {
+  start: AiWaypoint;
+  end: AiWaypoint;
+  /** @nullable */
+  waypoints?: AiWaypoint[] | null;
+  /** @nullable */
+  waypointCount?: number | null;
+  /** @nullable */
+  estimatedDistance?: number | null;
+  safe: boolean;
+  /** @nullable */
+  message?: string | null;
+  /** @nullable */
+  hazardsAvoided?: number | null;
+  /** @nullable */
+  cranesAvoided?: number | null;
+}
+
+export interface AiDecision {
+  id: string;
+  timestamp: string;
+  type: string;
+  tenantId: number;
+  /** @nullable */
+  taskId?: number | null;
+  /** @nullable */
+  workerId?: number | null;
+  explanation: string;
+  /** @nullable */
+  score?: number | null;
+}
+
+export interface AiDecisionLog {
+  decisions: AiDecision[];
+  count: number;
+}
+
 export type ListWorkersParams = {
 zone?: string;
 status?: string;
@@ -385,5 +546,9 @@ severity?: string;
 
 export type ListDeliveriesParams = {
 status?: string;
+};
+
+export type GetAiDecisionsParams = {
+limit?: number;
 };
 

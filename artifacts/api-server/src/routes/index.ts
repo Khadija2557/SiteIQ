@@ -13,6 +13,7 @@ import reportsRouter from "./reports";
 import dashboardRouter from "./dashboard";
 import statsRouter from "./stats";
 import routesRouter from "./routes";
+import aiRouter from "./ai";
 
 const router: IRouter = Router();
 
@@ -30,5 +31,6 @@ router.use(reportsRouter);
 router.use(dashboardRouter);
 router.use(statsRouter);
 router.use(routesRouter);
+router.use(aiRouter);
 
 export default router;
