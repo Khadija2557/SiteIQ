@@ -33,13 +33,13 @@ export default function Login() {
   const handleDemoLogin = () => {
     setError("");
     loginMutation.mutate(
-      { data: { email: "admin@siteiq.com", password: "demo123" } },
+      { data: { email: "admin@tower.com", password: "password" } },
       {
         onSuccess: (data) => {
           login(data.token, data.user);
         },
         onError: () => {
-          setError("Demo login failed — please use admin@tower.com / admin123");
+          setError("Demo login failed — please use admin@tower.com / password");
         },
       }
     );
@@ -118,7 +118,7 @@ export default function Login() {
             disabled={loginMutation.isPending}
             data-testid="button-demo-login"
           >
-            Demo Login — admin@siteiq.com
+            Demo Login — admin@tower.com
           </Button>
         </div>
 
