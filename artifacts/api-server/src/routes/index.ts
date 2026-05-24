@@ -11,6 +11,8 @@ import camerasRouter from "./cameras";
 import robotsRouter from "./robots";
 import reportsRouter from "./reports";
 import dashboardRouter from "./dashboard";
+import statsRouter from "./stats";
+import routesRouter from "./routes";
 
 const router: IRouter = Router();
 
@@ -26,5 +28,7 @@ router.use(camerasRouter);
 router.use(robotsRouter);
 router.use(reportsRouter);
 router.use(dashboardRouter);
+router.use(statsRouter);
+router.use(routesRouter);
 
 export default router;

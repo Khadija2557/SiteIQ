@@ -7,5 +7,6 @@ export * from "./hazards";
 export * from "./alerts";
 export * from "./deliveries";
 export * from "./cameras";
+export * from "./cv_events";
 export * from "./robots";
 export * from "./reports";

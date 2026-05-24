@@ -1,0 +1,36 @@
+4. DISRUPTION HANDLER — handleDisruption(disruptionEvent):
+disruptionEvent types: 'worker_sos', 'machine_breakdown', 'hazard_created', 'delivery_late', 'worker_ppe_violation'
+For each type:
+- Identify all tasks affected by this disruption
+- Find alternative assignments using findBestWorkerForTask
+- Generate re-route plan
+- Return: { affected_tasks, new_assignments, supervisor_notifications, explanation }
+
+5. EXPLAINABLE AI — generateExplanation(assignment):
+Generate natural-language explanation string:
+"Ahmed Raza was assigned to [Task] because: he is a certified electrician (required), currently 45m from Zone C (closest available), fatigue score is 2/10 (well-rested), and PPE compliance is 98% (exemplary). Two other workers were considered: Bilal Hussain (disqualified — no electrical cert), Zubair Khan (lower score — further away and higher fatigue)."
+Build this from the reasons[] array — make it sound like a real AI decision, not a template.
+
+6. ROUTE PLANNER — planSafeRoute(startX, startY, endX, endY, hazards, machines):
+Implement A* pathfinding on a grid:
+- Grid size: 100x100 units representing the site
+- Blocked cells: any cell within radius 5 of an active hazard, within radius 8 of an operating crane
+- Find shortest safe path from start to end
+- Return array of waypoints: [{x, y}] that the worker/vehicle should follow
+- If no safe path exists, return null and trigger supervisor alert
+
+7. HEAT EXPOSURE TRACKER — checkHeatExposure(workers):
+- For each worker, check: zone has heat_risk flag AND worker has been in that zone > 3 hours
+- Return list of workers needing rotation with suggested indoor task reassignment
+
+Create API endpoints that call these functions:
+POST /api/ai/assign-task — body: {task_id} → runs findBestWorkerForTask, returns candidates with reasoning
+POST /api/ai/optimize-schedule → runs optimizeFullSchedule on all pending tasks, returns full plan
+POST /api/ai/handle-disruption — body: {type, entity_id} → runs handleDisruption, applies changes, returns report
+GET /api/ai/decisions/recent — last 10 AI decisions with full reasoning text
+
+Also create a background job (setInterval every 60 seconds) that:
+- Checks for unassigned high-priority tasks and auto-assigns them
+- Checks heat exposure for all workers
+- Checks for schedule drift (tasks overdue by more than 30 minutes)
+- Broadcasts any AI decisions made via Socket.IO event 'ai:decision'

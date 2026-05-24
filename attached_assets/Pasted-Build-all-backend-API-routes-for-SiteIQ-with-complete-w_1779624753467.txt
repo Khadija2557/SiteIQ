@@ -1,0 +1,92 @@
+Build all backend API routes for SiteIQ with complete working business logic. Every endpoint must do real work — no stubs or placeholder responses.
+
+AUTH ROUTES (/api/auth):
+POST /api/auth/login — validate email/password, return JWT token with user role + tenant_id
+POST /api/auth/logout — invalidate token
+GET /api/auth/me — return current user profile from JWT
+POST /api/auth/register-tenant — create new tenant + admin user (for SaaS signup)
+
+WORKER ROUTES (/api/workers) — all protected by JWT middleware:
+GET /api/workers — return all workers for tenant, with current zone, status, PPE score
+GET /api/workers/:id — full worker detail including task history and safety record
+POST /api/workers — create new worker
+PATCH /api/workers/:id/location — update worker x,y position (called by mobile app every 30s)
+PATCH /api/workers/:id/status — update status (active, break, sos, off-site)
+PATCH /api/workers/:id/ppe-score — update PPE compliance score
+GET /api/workers/:id/route — get current safe route for this worker
+
+TASK ROUTES (/api/tasks):
+GET /api/tasks — all tasks for tenant with assigned worker names, grouped by status
+POST /api/tasks — create task
+PATCH /api/tasks/:id/status — move task between statuses, emit Socket.IO event
+PATCH /api/tasks/:id/assign — assign to worker (validates certifications match task requirements)
+POST /api/tasks/:id/reassign — AI reassignment: finds best available worker based on: skill match, zone proximity (Manhattan distance from x,y coords), fatigue score < 7, PPE score > 60, not already on critical task — returns explanation string of why worker was chosen
+POST /api/tasks/ai-optimize — run full schedule optimization: for all unassigned tasks, find optimal worker assignment, return proposed assignments with AI reasoning for each
+
+MACHINE ROUTES (/api/machines):
+GET /api/machines — all machines with live status
+PATCH /api/machines/:id/status — update machine status, emit event
+PATCH /api/machines/:id/location — update position
+POST /api/machines/:id/route — calculate conflict-free route from current position to target zone using simple grid pathfinding (A* or BFS avoiding hazard zones)
+GET /api/machines/:id/conflicts — check if machine route conflicts with other machine routes or worker positions
+
+HAZARD ROUTES (/api/hazards):
+GET /api/hazards — all active hazards
+POST /api/hazards — create hazard (from CV detection or manual)
+PATCH /api/hazards/:id/resolve — mark resolved
+GET /api/hazards/zone/:zone — hazards in specific zone
+POST /api/hazards/check-proximity — given x,y coordinates, return all hazards within radius (default 10 units)
+
+ALERT ROUTES (/api/alerts):
+GET /api/alerts — all alerts, newest first, filterable by severity and acknowledged status
+POST /api/alerts — create alert, emit Socket.IO event to all connected clients immediately
+PATCH /api/alerts/:id/acknowledge — mark acknowledged with user + timestamp
+POST /api/alerts/acknowledge-all — bulk acknowledge
+
+CAMERA + CV ROUTES (/api/cameras):
+GET /api/cameras — all camera feeds for tenant
+POST /api/cv-events — receive detection event from CV service: {camera_id, event_type, confidence, bbox, worker_id} — process it: if PPE violation create alert, if proximity breach create alert, if heat exposure check worker fatigue timer
+GET /api/cv-events/recent — last 50 CV detection events
+
+DELIVERY ROUTES (/api/deliveries):
+GET /api/deliveries — all deliveries with ETA and status
+POST /api/deliveries — create delivery
+PATCH /api/deliveries/:id/arrive — mark arrived, auto-assign nearest available forklift, create task for unloading, emit Socket.IO event
+
+ROUTE PLANNING (/api/routes):
+POST /api/routes/worker — calculate safe walking route for worker from A to B: avoid all active hazard zones, avoid machine operating areas, return array of waypoints [{x,y}]
+POST /api/routes/machine — calculate vehicle route: wider clearance from hazards, no pedestrian-only zones, return waypoints
+POST /api/routes/check — check if a direct path between two points is safe (no hazard intersections)
+
+STATS (/api/stats):
+GET /api/stats/dashboard — single endpoint returning: worker_count, active_workers, machine_count, active_alerts, ppe_compliance_avg, tasks_completed_today, tasks_in_progress, safety_score (0-10), productivity_score (0-100)
+GET /api/stats/analytics — 7-day task completion history, 30-day incident history, machine utilization per machine, PPE by zone
+
+REPORTS (/api/reports):
+GET /api/reports — list all generated reports
+POST /api/reports/generate — generate daily report: query all tasks from today, all alerts, all incidents, all worker hours, format into JSON, save to reports table, return report data
+GET /api/reports/:id — get specific report data
+
+ROBOT API (/api/robots) — for future autonomous machine integration:
+POST /api/robots/authenticate — robot sends API key, gets JWT
+GET /api/robots/tasks — robot pulls next assigned task from queue
+POST /api/robots/:id/complete — robot marks task complete, triggers next assignment
+POST /api/robots/:id/fail — robot reports failure, system auto-reassigns to nearest human worker and notifies supervisor
+
+MIDDLEWARE to implement:
+- authMiddleware: verify JWT, attach user + tenant_id to req
+- tenantMiddleware: filter all DB queries by req.user.tenant_id (multi-tenancy isolation)
+- rbacMiddleware(roles[]): check req.user.role is in allowed roles array
+- rateLimiter: 100 requests per minute per IP using express-rate-limit
+- errorHandler: global error handler returning consistent JSON error format
+
+SOCKET.IO EVENTS to emit:
+- 'worker:update' — when any worker position or status changes
+- 'machine:update' — when any machine status or position changes
+- 'alert:new' — when new alert created (all connected clients get it immediately)
+- 'task:update' — when task status changes
+- 'hazard:new' — when new hazard detected
+- 'delivery:arrived' — when delivery arrives
+- 'cv:detection' — when CV event processed
+
+Simulate real-time data movement: create a background interval (every 5 seconds) that slightly randomizes worker positions, occasionally changes machine statuses, and randomly generates a CV detection event — broadcast all changes via Socket.IO.
