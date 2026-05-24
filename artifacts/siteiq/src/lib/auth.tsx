@@ -1,7 +1,10 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { useGetMe } from "@workspace/api-client-react";
+import { useGetMe, setAuthTokenGetter } from "@workspace/api-client-react";
 import { User } from "@workspace/api-client-react/src/generated/api.schemas";
 import { useLocation } from "wouter";
+
+// Register a global token getter so every generated hook sends the JWT
+setAuthTokenGetter(() => localStorage.getItem("siteiq_token"));
 
 interface AuthContextType {
   user: User | null;
