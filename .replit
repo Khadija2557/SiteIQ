@@ -1,4 +1,4 @@
-modules = ["nodejs-24", "postgresql-16"]
+modules = ["nodejs-24", "postgresql-16", "python-3.12"]
 
 [deployment]
 router = "application"
@@ -24,6 +24,10 @@ args = "SiteIQ API Server"
 task = "workflow.run"
 args = "SiteIQ Frontend"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "SiteIQ CV Service"
+
 [[workflows.workflow]]
 name = "SiteIQ API Server"
 author = "agent"
@@ -48,6 +52,18 @@ waitForPort = 5000
 [workflows.workflow.metadata]
 outputType = "webview"
 
+[[workflows.workflow]]
+name = "SiteIQ CV Service"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd cv-service && python main.py"
+waitForPort = 9000
+
+[workflows.workflow.metadata]
+outputType = "console"
+
 [agent]
 stack = "BEST_EFFORT_FALLBACK"
 expertMode = true
@@ -66,6 +82,10 @@ externalPort = 80
 [[ports]]
 localPort = 8080
 externalPort = 8080
+
+[[ports]]
+localPort = 9000
+externalPort = 9000
 
 [[ports]]
 localPort = 23183

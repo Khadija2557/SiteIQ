@@ -14,9 +14,11 @@ import dashboardRouter from "./dashboard";
 import statsRouter from "./stats";
 import routesRouter from "./routes";
 import aiRouter from "./ai";
+import internalRouter from "./internal";
 
 const router: IRouter = Router();
 
+router.use(internalRouter);
 router.use(healthRouter);
 router.use(authRouter);
 router.use(workersRouter);
