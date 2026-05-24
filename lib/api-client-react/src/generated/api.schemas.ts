@@ -298,6 +298,17 @@ export interface RobotUpdate {
   currentTaskId?: number;
 }
 
+export interface TaskReassignResult {
+  task: Task;
+  aiReasoning: string;
+  /** @nullable */
+  newWorkerId: number | null;
+}
+
+export interface ReportGenerateInput {
+  type: string;
+}
+
 export type ReportDataJson = { [key: string]: unknown };
 
 export interface Report {

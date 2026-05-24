@@ -384,6 +384,25 @@ paths:
               schema:
                 $ref: "#/components/schemas/TaskStats"
 
+  /tasks/{id}/reassign:
+    post:
+      operationId: reassignTask
+      tags: [tasks]
+      summary: AI reassign a blocked task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Task reassigned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskReassignResult"
+
   /hazards:
     get:
       operationId: listHazards
@@ -647,6 +666,25 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Report"
+
+  /reports/generate:
+    post:
+      operationId: generateReport
+      tags: [reports]
+      summary: Generate a new report
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportGenerateInput"
+      responses:
+        "201":
+          description: Report generated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Report"
 
   /dashboard/summary:
     get:
@@ -1197,6 +1235,24 @@ components:
           type: string
         currentTaskId:
           type: integer
+
+    TaskReassignResult:
+      type: object
+      required: [task, aiReasoning, newWorkerId]
+      properties:
+        task:
+          $ref: "#/components/schemas/Task"
+        aiReasoning:
+          type: string
+        newWorkerId:
+          type: ["integer", "null"]
+
+    ReportGenerateInput:
+      type: object
+      required: [type]
+      properties:
+        type:
+          type: string
 
     Report:
       type: object

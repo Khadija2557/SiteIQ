@@ -16,11 +16,11 @@ import Deliveries from "@/pages/deliveries";
 import Cameras from "@/pages/cameras";
 import Robots from "@/pages/robots";
 import Analytics from "@/pages/analytics";
+import Reports from "@/pages/reports";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
 
-// Protected Route Wrapper
 function ProtectedRoute({ component: Component }: { component: any }) {
   const { user, isLoading } = useAuth();
 
@@ -61,6 +61,7 @@ function Router() {
       <Route path="/cameras"><ProtectedRoute component={Cameras} /></Route>
       <Route path="/robots"><ProtectedRoute component={Robots} /></Route>
       <Route path="/analytics"><ProtectedRoute component={Analytics} /></Route>
+      <Route path="/reports"><ProtectedRoute component={Reports} /></Route>
       
       <Route component={NotFound} />
     </Switch>

@@ -394,6 +394,33 @@ export const GetTaskStatsResponse = zod.object({
 
 
 /**
+ * @summary AI reassign a blocked task
+ */
+export const ReassignTaskParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ReassignTaskResponse = zod.object({
+  "task": zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "status": zod.string(),
+  "priority": zod.string(),
+  "assignedWorkerId": zod.number().nullish(),
+  "zone": zod.string(),
+  "toolsRequired": zod.array(zod.string()).optional(),
+  "estimatedMinutes": zod.number().nullish(),
+  "deadline": zod.string().nullish(),
+  "dependencies": zod.array(zod.number()).optional(),
+  "tenantId": zod.number()
+}),
+  "aiReasoning": zod.string(),
+  "newWorkerId": zod.number().nullable()
+})
+
+
+/**
  * @summary List hazards
  */
 export const ListHazardsQueryParams = zod.object({
@@ -656,6 +683,14 @@ export const ListReportsResponseItem = zod.object({
   "tenantId": zod.number()
 })
 export const ListReportsResponse = zod.array(ListReportsResponseItem)
+
+
+/**
+ * @summary Generate a new report
+ */
+export const GenerateReportBody = zod.object({
+  "type": zod.string()
+})
 
 
 /**

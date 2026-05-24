@@ -30,6 +30,21 @@ export default function Login() {
     );
   };
 
+  const handleDemoLogin = () => {
+    setError("");
+    loginMutation.mutate(
+      { data: { email: "admin@siteiq.com", password: "demo123" } },
+      {
+        onSuccess: (data) => {
+          login(data.token, data.user);
+        },
+        onError: () => {
+          setError("Demo login failed — please use admin@tower.com / admin123");
+        },
+      }
+    );
+  };
+
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-background relative overflow-hidden">
       {/* Background ambient effects */}
@@ -89,7 +104,25 @@ export default function Login() {
           </Button>
         </form>
 
-        <div className="mt-8 text-center border-t border-border pt-6">
+        <div className="mt-6">
+          <div className="relative flex items-center gap-3 mb-4">
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">or</span>
+            <div className="flex-1 h-px bg-border" />
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full h-10 font-mono text-xs uppercase tracking-wider border-border text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all"
+            onClick={handleDemoLogin}
+            disabled={loginMutation.isPending}
+            data-testid="button-demo-login"
+          >
+            Demo Login — admin@siteiq.com
+          </Button>
+        </div>
+
+        <div className="mt-6 text-center border-t border-border pt-4">
           <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
             Restricted Access <br/> Authorized Personnel Only
           </p>

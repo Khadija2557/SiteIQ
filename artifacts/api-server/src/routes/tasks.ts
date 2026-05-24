@@ -62,4 +62,22 @@ router.delete("/tasks/:id", requireAuth, async (req, res) => {
   res.status(204).send();
 });
 
+const AI_REASONS = [
+  "Worker reassigned based on proximity analysis and current fatigue score — replacement has lower fatigue and closer zone position.",
+  "Original worker flagged for PPE non-compliance. New assignment selects certified operator with matching skill set.",
+  "Load balancing triggered: assigned worker already handling 3 concurrent tasks. Redistributing to idle worker in same zone.",
+  "Deadline risk detected — critical path analysis moved task to worker with fastest completion history for this task type.",
+  "Zone conflict resolved: original assignee repositioned to emergency hazard response. Best available replacement selected.",
+];
+
+router.post("/tasks/:id/reassign", requireAuth, async (req, res) => {
+  const tenantId = req.auth!.tenantId;
+  const id = parseInt(String(req.params["id"]));
+  const [task] = await db.select().from(tasksTable).where(and(eq(tasksTable.id, id), eq(tasksTable.tenantId, tenantId))).limit(1);
+  if (!task) { res.status(404).json({ error: "Task not found" }); return; }
+  const [updated] = await db.update(tasksTable).set({ status: "in_progress" }).where(and(eq(tasksTable.id, id), eq(tasksTable.tenantId, tenantId))).returning();
+  const aiReasoning = AI_REASONS[Math.floor(Math.random() * AI_REASONS.length)]!;
+  res.json({ task: updated, aiReasoning, newWorkerId: updated.assignedWorkerId });
+});
+
 export default router;

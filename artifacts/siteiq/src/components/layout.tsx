@@ -12,6 +12,7 @@ import {
   Video, 
   Cpu, 
   BarChart2,
+  FileText,
   LogOut,
   Menu
 } from "lucide-react";
@@ -29,6 +30,7 @@ const NAV_ITEMS = [
   { href: "/cameras", label: "Cameras", icon: Video },
   { href: "/robots", label: "Robots", icon: Cpu },
   { href: "/analytics", label: "Analytics", icon: BarChart2 },
+  { href: "/reports", label: "Reports", icon: FileText },
 ];
 
 export function Layout({ children }: { children: ReactNode }) {
@@ -46,7 +48,7 @@ export function Layout({ children }: { children: ReactNode }) {
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 cursor-pointer font-mono text-sm uppercase tracking-wide
                 ${isActive 
                   ? "bg-primary/10 text-primary border border-primary/20 shadow-[inset_0_0_10px_rgba(var(--primary),0.1)]" 
-                  : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 }
               `}
             >
@@ -65,8 +67,8 @@ export function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="flex h-screen bg-background overflow-hidden text-foreground selection:bg-primary/30">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 bg-sidebar border-r border-sidebar-border shadow-xl z-20">
-        <div className="p-6 border-b border-sidebar-border flex items-center gap-3">
+      <aside className="hidden md:flex flex-col w-64 bg-card border-r border-border shadow-xl z-20">
+        <div className="p-6 border-b border-border flex items-center gap-3">
           <div className="w-10 h-10 bg-primary/10 border border-primary/30 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(var(--primary),0.15)] relative overflow-hidden">
             <div className="absolute inset-0 bg-primary/20 animate-pulse" />
             <Activity className="w-5 h-5 text-primary relative z-10" />
@@ -81,7 +83,7 @@ export function Layout({ children }: { children: ReactNode }) {
           <NavLinks />
         </div>
 
-        <div className="p-4 border-t border-sidebar-border mt-auto">
+        <div className="p-4 border-t border-border mt-auto bg-card">
           <div className="mb-4 px-2">
             <p className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Facility</p>
             <p className="text-sm font-mono text-foreground font-semibold">Tower Construction Ltd</p>
@@ -92,7 +94,7 @@ export function Layout({ children }: { children: ReactNode }) {
           </div>
           <Button 
             variant="ghost" 
-            className="w-full justify-start text-muted-foreground hover:text-destructive hover:bg-destructive/10 font-mono uppercase text-xs tracking-wider"
+            className="w-full justify-start text-muted-foreground hover:text-destructive hover:bg-destructive/10 font-mono uppercase text-xs tracking-wider border border-transparent hover:border-destructive/20"
             onClick={logout}
           >
             <LogOut className="w-4 h-4 mr-2" />
@@ -102,7 +104,7 @@ export function Layout({ children }: { children: ReactNode }) {
       </aside>
 
       {/* Mobile Sidebar & Header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-sidebar border-b border-sidebar-border z-30 flex items-center justify-between px-4">
+      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-card border-b border-border z-30 flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <Activity className="w-6 h-6 text-primary" />
           <h1 className="text-xl font-mono font-bold text-foreground uppercase">SITE<span className="text-primary">IQ</span></h1>
@@ -113,14 +115,14 @@ export function Layout({ children }: { children: ReactNode }) {
               <Menu className="w-6 h-6" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-72 bg-sidebar border-r border-sidebar-border p-0 flex flex-col">
-             <div className="p-6 border-b border-sidebar-border">
+          <SheetContent side="left" className="w-72 bg-card border-r border-border p-0 flex flex-col">
+             <div className="p-6 border-b border-border">
               <h1 className="text-xl font-mono font-bold text-foreground uppercase">SITE<span className="text-primary">IQ</span></h1>
             </div>
             <div className="flex-1 overflow-y-auto">
               <NavLinks />
             </div>
-            <div className="p-4 border-t border-sidebar-border">
+            <div className="p-4 border-t border-border">
               <Button 
                 variant="ghost" 
                 className="w-full justify-start text-muted-foreground hover:text-destructive hover:bg-destructive/10 font-mono uppercase text-xs"
@@ -136,7 +138,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
       {/* Main Content */}
       <main className="flex-1 relative overflow-y-auto custom-scrollbar md:pt-0 pt-16">
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background pointer-events-none z-0" />
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background" />
         <div className="relative z-10 p-6 md:p-8 min-h-full">
           {children}
         </div>

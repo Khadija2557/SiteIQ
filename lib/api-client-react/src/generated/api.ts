@@ -43,10 +43,12 @@ import type {
   MachineInput,
   MachineUpdate,
   Report,
+  ReportGenerateInput,
   Robot,
   RobotUpdate,
   Task,
   TaskInput,
+  TaskReassignResult,
   TaskStats,
   TaskUpdate,
   User,
@@ -1500,6 +1502,76 @@ export function useGetTaskStats<TData = Awaited<ReturnType<typeof getTaskStats>>
 
 
 
+export const getReassignTaskUrl = (id: number,) => {
+
+
+
+
+  return `/api/tasks/${id}/reassign`
+}
+
+/**
+ * @summary AI reassign a blocked task
+ */
+export const reassignTask = async (id: number, options?: RequestInit): Promise<TaskReassignResult> => {
+
+  return customFetch<TaskReassignResult>(getReassignTaskUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getReassignTaskMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reassignTask>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof reassignTask>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['reassignTask'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof reassignTask>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  reassignTask(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ReassignTaskMutationResult = NonNullable<Awaited<ReturnType<typeof reassignTask>>>
+
+    export type ReassignTaskMutationError = ErrorType<unknown>
+
+    /**
+ * @summary AI reassign a blocked task
+ */
+export const useReassignTask = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reassignTask>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof reassignTask>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getReassignTaskMutationOptions(options));
+    }
+
 export const getListHazardsUrl = (params?: ListHazardsParams,) => {
   const normalizedParams = new URLSearchParams();
 
@@ -2480,6 +2552,77 @@ export function useListReports<TData = Awaited<ReturnType<typeof listReports>>, 
 
 
 
+
+export const getGenerateReportUrl = () => {
+
+
+
+
+  return `/api/reports/generate`
+}
+
+/**
+ * @summary Generate a new report
+ */
+export const generateReport = async (reportGenerateInput: ReportGenerateInput, options?: RequestInit): Promise<Report> => {
+
+  return customFetch<Report>(getGenerateReportUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      reportGenerateInput,)
+  }
+);}
+
+
+
+
+export const getGenerateReportMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateReport>>, TError,{data: BodyType<ReportGenerateInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof generateReport>>, TError,{data: BodyType<ReportGenerateInput>}, TContext> => {
+
+const mutationKey = ['generateReport'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof generateReport>>, {data: BodyType<ReportGenerateInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  generateReport(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GenerateReportMutationResult = NonNullable<Awaited<ReturnType<typeof generateReport>>>
+    export type GenerateReportMutationBody = BodyType<ReportGenerateInput>
+    export type GenerateReportMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Generate a new report
+ */
+export const useGenerateReport = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateReport>>, TError,{data: BodyType<ReportGenerateInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof generateReport>>,
+        TError,
+        {data: BodyType<ReportGenerateInput>},
+        TContext
+      > => {
+      return useMutation(getGenerateReportMutationOptions(options));
+    }
 
 export const getGetDashboardSummaryUrl = () => {
 
